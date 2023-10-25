@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 
 import { removeTask } from "../redux/actions/taskReducersAction";
 
-function DeleteModal({ setIsDeleteOpen, deleteId }) {
+function DeleteModal({ setIsDeleteOpen, deleteId, socket, activeUser }) {
   const dispatch = useDispatch();
 
   const base_url = process.env.REACT_APP_BACKEND_URL;
@@ -23,6 +23,7 @@ function DeleteModal({ setIsDeleteOpen, deleteId }) {
     removeTask(dispatch, {
       id: deleteId,
     });
+    socket.emit("send-notification", `${activeUser.email} deleted task`);
     setIsDeleteOpen(false);
   };
 
@@ -61,7 +62,9 @@ function DeleteModal({ setIsDeleteOpen, deleteId }) {
                 <button
                   type="button"
                   className="ml-2 sm:px-4 px-3 sm:py-2 py-1 bg-red-400 sm:text-[16px] text-[14px] text-white rounded-md hover:bg-red-500"
-                  onClick={(e) => setIsDeleteOpen(false)}
+                  onClick={(e) => {
+                    setIsDeleteOpen(false);
+                  }}
                 >
                   Cancel
                 </button>

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { UseSelector, useSelector } from "react-redux/es/hooks/useSelector";
 
+import io from "socket.io-client";
+
 import { addTask } from "../redux/actions/taskReducersAction";
 
-function AddModal({ setIsAddOpen, successNotify, errNotify }) {
+function AddModal({ setIsAddOpen, successNotify, errNotify, socket }) {
   const activeUser = useSelector((state) => state.userReducer);
 
   const [title, setTitle] = useState("");
@@ -31,6 +33,7 @@ function AddModal({ setIsAddOpen, successNotify, errNotify }) {
         .then((res) => {
           addTask(dispatch, res.data.task);
           successNotify("Task Added");
+          socket.emit("send-notification", `${activeUser.email} added task`);
         })
         .catch((err) => console.log(err));
 

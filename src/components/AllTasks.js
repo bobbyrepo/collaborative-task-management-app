@@ -4,6 +4,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IoMdAdd } from "react-icons/io";
+import { MdNotifications } from "react-icons/md";
+import { BsDot } from "react-icons/bs";
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { IoSquareOutline } from "react-icons/io5";
@@ -11,6 +13,7 @@ import { FiCheckSquare } from "react-icons/fi";
 import AddModal from "./AddModal";
 import EditModal from "./EditModal";
 import DeleteModal from "./DeleteModal";
+import NotificationsModal from "./NotificationsModal";
 
 import user from "../assets/user (1).png";
 
@@ -24,9 +27,10 @@ import { setUser } from "../redux/actions/userReducerAction";
 import { setTasks } from "../redux/actions/taskReducersAction";
 import { selectToEdit } from "../redux/actions/selectToEditReducerAction";
 
-function AllTasks() {
+function AllTasks({ socket }) {
   const data = useSelector((state) => state.taskReducer);
   const activeUser = useSelector((state) => state.userReducer);
+  const notifications = useSelector((state) => state.notificationReducer);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -37,8 +41,10 @@ function AllTasks() {
   const [activeUserId, setActiveUserId] = useState("");
   const [isAddOpen, setIsAddOpen] = useState(false); //to toggle Add Modal
   const [isEditOpen, setIsEditOpen] = useState(false); //to toggle edit Modal
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false); //to toggle edit Modal
-  const [deleteId, setDeleteId] = useState("false"); //to toggle edit Modal
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false); //to toggle delete Modal
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [newNotification, setNewNotification] = useState(false);
+  const [deleteId, setDeleteId] = useState("false");
   const [selectedTask, setSelectedTask] = useState("");
 
   useEffect(() => {
@@ -92,7 +98,8 @@ function AllTasks() {
         });
     }
     fetchTasks();
-  }, []);
+    setNewNotification(true);
+  }, [notifications]);
 
   useEffect(() => {
     axios
@@ -112,6 +119,7 @@ function AllTasks() {
           setIsAddOpen={setIsAddOpen}
           successNotify={successNotify}
           errNotify={errNotify}
+          socket={socket}
         />
       )}
       {/*------ edit modal component ------*/}
@@ -124,9 +132,20 @@ function AllTasks() {
       )}
       {/*------ Delete modal component ------*/}
       {isDeleteOpen && (
-        <DeleteModal setIsDeleteOpen={setIsDeleteOpen} deleteId={deleteId} />
+        <DeleteModal
+          setIsDeleteOpen={setIsDeleteOpen}
+          deleteId={deleteId}
+          socket={socket}
+          activeUser={activeUser}
+        />
       )}
-      <div className="flex justify-end sm:mb-5 mb-2">
+      {isNotificationOpen && (
+        <NotificationsModal
+          setIsNotificationOpen={setIsNotificationOpen}
+          setNewNotification={setNewNotification}
+        />
+      )}
+      <div className="flex gap-2 justify-end sm:mb-5 mb-2">
         <button
           className="flex items-center sm:gap-1 gap-0 px-3 py-1 sm:text-xl text-md font-medium border-2 border-orange-300 hover:text-white hover:bg-orange-300 rounded-xl duration-100"
           onClick={() => setIsAddOpen(true)}
@@ -136,8 +155,20 @@ function AllTasks() {
           </span>
           Add
         </button>
-        {/*--------- Add Task Modal ---------*/}
+        <button
+          className="relative flex items-center sm:gap-1 gap-0 px-3 sm:text-2xl text-xl font-semibold hover:text-white hover:bg-orange-300 rounded-xl duration-100"
+          // ${newNotification ? "" : ""}
+          onClick={() => {
+            setIsNotificationOpen(true);
+          }}
+        >
+          {newNotification && (
+            <BsDot className="absolute -top-1 text-red-500 text-4xl" />
+          )}
+          <MdNotifications />
+        </button>
       </div>
+      {/*--------- Add Task Modal ---------*/}
       {data.map((item) => (
         <div
           key={item._id}
@@ -201,6 +232,10 @@ function AllTasks() {
               {!item.resolved && (
                 <IoSquareOutline
                   onClick={() => {
+                    socket.emit(
+                      "send-notification",
+                      `${activeUser.email} completed task`
+                    );
                     editTask(dispatch, {
                       _id: item._id,
                       resolved: true,
