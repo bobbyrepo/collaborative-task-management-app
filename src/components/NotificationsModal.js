@@ -33,12 +33,20 @@ function NotificationsModal({ setIsNotificationOpen, setNewNotification }) {
           </header>
           <form>
             <section>
-              <div className="mt-3 sm:ml-4 sm:mt-0 text-left">
+              <div className="mt-3  sm:mt-0">
                 {notifications.map((item) => (
-                  <div key={item} className="">
+                  <div
+                    key={item}
+                    className="block sm:text-[18px] text-[16px] font-medium text-gray-700"
+                  >
                     {item}
                   </div>
                 ))}
+                {notifications.length == 0 && (
+                  <div className="block sm:text-[18px] text-[16px] font-medium text-gray-700">
+                    No notifications yet
+                  </div>
+                )}
               </div>
             </section>
           </form>

@@ -18,7 +18,7 @@ function App() {
 
   useEffect(() => {
     socket.on("new-notification", (res) => {
-      console.log("Received new notification:", res);
+      // console.log("Received new notification:", res);
       addNotification(dispatch, res);
     });
   }, []);

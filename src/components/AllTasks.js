@@ -169,6 +169,12 @@ function AllTasks({ socket }) {
         </button>
       </div>
       {/*--------- Add Task Modal ---------*/}
+
+      {data.length == 0 && (
+        <div className="md:text-xl sm:text-lg text-md md:mt-12 mt-5 font-semibold text-center text-red-500">
+          No tasks to show.
+        </div>
+      )}
       {data.map((item) => (
         <div
           key={item._id}

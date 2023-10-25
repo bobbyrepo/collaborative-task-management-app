@@ -18,7 +18,9 @@ function DeleteModal({ setIsDeleteOpen, deleteId, socket, activeUser }) {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
-      .then((res) => console.log(res))
+      .then((res) => {
+        // console.log(res);
+      })
       .catch((err) => console.log(err));
     removeTask(dispatch, {
       id: deleteId,
