@@ -92,7 +92,7 @@ function AllTasks() {
         });
     }
     fetchTasks();
-  }, []);
+  }, [activeUser]);
 
   useEffect(() => {
     axios
