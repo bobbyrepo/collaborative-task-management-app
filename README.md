@@ -44,6 +44,12 @@ The project utilizes the following technologies:
   - React for building the user interface
   - Redux for state management
   - React-icons for icons
+ 
+ ### Project Configuration
+
+Before you can run this project, you need to set up some environment variables. Create an `.env` file in the project root and add the following variables:
+
+- `REACT_APP_BACKEND_URL`= `API link`
 
 ## Usage
 
